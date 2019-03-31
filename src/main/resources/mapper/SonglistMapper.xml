@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ebook.user.dao.SonglistMapper" >
+  <resultMap id="BaseResultMap" type="com.ebook.user.model.Songlist" >
+    <id column="songListId" property="songlistid" jdbcType="VARCHAR" />
+    <result column="songListName" property="songlistname" jdbcType="VARCHAR" />
+    <result column="songListPic" property="songlistpic" jdbcType="VARCHAR" />
+    <result column="songListCount" property="songlistcount" jdbcType="INTEGER" />
+    <result column="songListPlayCount" property="songlistplaycount" jdbcType="BIGINT" />
+    <result column="emotionValue" property="emotionvalue" jdbcType="INTEGER" />
+    <result column="hot" property="hot" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.ebook.user.model.SonglistWithBLOBs" extends="BaseResultMap" >
+    <result column="songListDescription" property="songlistdescription" jdbcType="LONGVARCHAR" />
+    <result column="tagBody" property="tagbody" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    songListId, songListName, songListPic, songListCount, songListPlayCount, emotionValue, 
+    hot
+  </sql>
+  <sql id="Blob_Column_List" >
+    songListDescription, tagBody
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.ebook.user.model.SonglistExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from songlist
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.ebook.user.model.SonglistExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from songlist
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from songlist
+    where songListId = #{songlistid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from songlist
+    where songListId = #{songlistid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.ebook.user.model.SonglistExample" >
+    delete from songlist
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.ebook.user.model.SonglistWithBLOBs" >
+    insert into songlist (songListId, songListName, songListPic, 
+      songListCount, songListPlayCount, emotionValue, 
+      hot, songListDescription, tagBody
+      )
+    values (#{songlistid,jdbcType=VARCHAR}, #{songlistname,jdbcType=VARCHAR}, #{songlistpic,jdbcType=VARCHAR}, 
+      #{songlistcount,jdbcType=INTEGER}, #{songlistplaycount,jdbcType=BIGINT}, #{emotionvalue,jdbcType=INTEGER}, 
+      #{hot,jdbcType=INTEGER}, #{songlistdescription,jdbcType=LONGVARCHAR}, #{tagbody,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.ebook.user.model.SonglistWithBLOBs" >
+    insert into songlist
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="songlistid != null" >
+        songListId,
+      </if>
+      <if test="songlistname != null" >
+        songListName,
+      </if>
+      <if test="songlistpic != null" >
+        songListPic,
+      </if>
+      <if test="songlistcount != null" >
+        songListCount,
+      </if>
+      <if test="songlistplaycount != null" >
+        songListPlayCount,
+      </if>
+      <if test="emotionvalue != null" >
+        emotionValue,
+      </if>
+      <if test="hot != null" >
+        hot,
+      </if>
+      <if test="songlistdescription != null" >
+        songListDescription,
+      </if>
+      <if test="tagbody != null" >
+        tagBody,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="songlistid != null" >
+        #{songlistid,jdbcType=VARCHAR},
+      </if>
+      <if test="songlistname != null" >
+        #{songlistname,jdbcType=VARCHAR},
+      </if>
+      <if test="songlistpic != null" >
+        #{songlistpic,jdbcType=VARCHAR},
+      </if>
+      <if test="songlistcount != null" >
+        #{songlistcount,jdbcType=INTEGER},
+      </if>
+      <if test="songlistplaycount != null" >
+        #{songlistplaycount,jdbcType=BIGINT},
+      </if>
+      <if test="emotionvalue != null" >
+        #{emotionvalue,jdbcType=INTEGER},
+      </if>
+      <if test="hot != null" >
+        #{hot,jdbcType=INTEGER},
+      </if>
+      <if test="songlistdescription != null" >
+        #{songlistdescription,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="tagbody != null" >
+        #{tagbody,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.ebook.user.model.SonglistExample" resultType="java.lang.Integer" >
+    select count(*) from songlist
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update songlist
+    <set >
+      <if test="record.songlistid != null" >
+        songListId = #{record.songlistid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songlistname != null" >
+        songListName = #{record.songlistname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songlistpic != null" >
+        songListPic = #{record.songlistpic,jdbcType=VARCHAR},
+      </if>
+      <if test="record.songlistcount != null" >
+        songListCount = #{record.songlistcount,jdbcType=INTEGER},
+      </if>
+      <if test="record.songlistplaycount != null" >
+        songListPlayCount = #{record.songlistplaycount,jdbcType=BIGINT},
+      </if>
+      <if test="record.emotionvalue != null" >
+        emotionValue = #{record.emotionvalue,jdbcType=INTEGER},
+      </if>
+      <if test="record.hot != null" >
+        hot = #{record.hot,jdbcType=INTEGER},
+      </if>
+      <if test="record.songlistdescription != null" >
+        songListDescription = #{record.songlistdescription,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.tagbody != null" >
+        tagBody = #{record.tagbody,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update songlist
+    set songListId = #{record.songlistid,jdbcType=VARCHAR},
+      songListName = #{record.songlistname,jdbcType=VARCHAR},
+      songListPic = #{record.songlistpic,jdbcType=VARCHAR},
+      songListCount = #{record.songlistcount,jdbcType=INTEGER},
+      songListPlayCount = #{record.songlistplaycount,jdbcType=BIGINT},
+      emotionValue = #{record.emotionvalue,jdbcType=INTEGER},
+      hot = #{record.hot,jdbcType=INTEGER},
+      songListDescription = #{record.songlistdescription,jdbcType=LONGVARCHAR},
+      tagBody = #{record.tagbody,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update songlist
+    set songListId = #{record.songlistid,jdbcType=VARCHAR},
+      songListName = #{record.songlistname,jdbcType=VARCHAR},
+      songListPic = #{record.songlistpic,jdbcType=VARCHAR},
+      songListCount = #{record.songlistcount,jdbcType=INTEGER},
+      songListPlayCount = #{record.songlistplaycount,jdbcType=BIGINT},
+      emotionValue = #{record.emotionvalue,jdbcType=INTEGER},
+      hot = #{record.hot,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ebook.user.model.SonglistWithBLOBs" >
+    update songlist
+    <set >
+      <if test="songlistname != null" >
+        songListName = #{songlistname,jdbcType=VARCHAR},
+      </if>
+      <if test="songlistpic != null" >
+        songListPic = #{songlistpic,jdbcType=VARCHAR},
+      </if>
+      <if test="songlistcount != null" >
+        songListCount = #{songlistcount,jdbcType=INTEGER},
+      </if>
+      <if test="songlistplaycount != null" >
+        songListPlayCount = #{songlistplaycount,jdbcType=BIGINT},
+      </if>
+      <if test="emotionvalue != null" >
+        emotionValue = #{emotionvalue,jdbcType=INTEGER},
+      </if>
+      <if test="hot != null" >
+        hot = #{hot,jdbcType=INTEGER},
+      </if>
+      <if test="songlistdescription != null" >
+        songListDescription = #{songlistdescription,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="tagbody != null" >
+        tagBody = #{tagbody,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where songListId = #{songlistid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.ebook.user.model.SonglistWithBLOBs" >
+    update songlist
+    set songListName = #{songlistname,jdbcType=VARCHAR},
+      songListPic = #{songlistpic,jdbcType=VARCHAR},
+      songListCount = #{songlistcount,jdbcType=INTEGER},
+      songListPlayCount = #{songlistplaycount,jdbcType=BIGINT},
+      emotionValue = #{emotionvalue,jdbcType=INTEGER},
+      hot = #{hot,jdbcType=INTEGER},
+      songListDescription = #{songlistdescription,jdbcType=LONGVARCHAR},
+      tagBody = #{tagbody,jdbcType=LONGVARCHAR}
+    where songListId = #{songlistid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ebook.user.model.Songlist" >
+    update songlist
+    set songListName = #{songlistname,jdbcType=VARCHAR},
+      songListPic = #{songlistpic,jdbcType=VARCHAR},
+      songListCount = #{songlistcount,jdbcType=INTEGER},
+      songListPlayCount = #{songlistplaycount,jdbcType=BIGINT},
+      emotionValue = #{emotionvalue,jdbcType=INTEGER},
+      hot = #{hot,jdbcType=INTEGER}
+    where songListId = #{songlistid,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectGroupByPlayCount" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from songlist
+    order  by songListCount desc
+  </select>
+
+  <update id="updateBatch"  parameterType="java.util.List">
+    <foreach collection="list" item="item" separator=";">
+      update songlist
+      <set >
+        <!--<if test="item.songlistname != null" >-->
+        <!--songListName = #{item.songlistname,jdbcType=VARCHAR},-->
+        <!--</if>-->
+        <!--<if test="songlistpic != null" >-->
+        <!--songListPic = #{item.songlistpic,jdbcType=VARCHAR},-->
+        <!--</if>-->
+        <!--<if test="songlistcount != null" >-->
+        <!--songListCount = #{item.songlistcount,jdbcType=INTEGER},-->
+        <!--</if>-->
+        <!--<if test="songlistplaycount != null" >-->
+        <!--songListPlayCount = #{item.songlistplaycount,jdbcType=BIGINT},-->
+        <!--</if>-->
+        <!--<if test="emotionvalue != null" >-->
+        <!--emotionValue = #{item.emotionvalue,jdbcType=INTEGER},-->
+        <!--</if>-->
+        <!--<if test="songlistdescription != null" >-->
+        <!--songListDescription = #{songlistdescription,jdbcType=LONGVARCHAR},-->
+        <!--</if>-->
+        <if test="item.hot != null" >
+          hot = #{item.hot,jdbcType=INTEGER},
+        </if>
+        <if test="item.tagbody != null" >
+          tagBody = #{item.tagbody,jdbcType=LONGVARCHAR},
+        </if>
+      </set>
+      where songListId = #{item.songlistid,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+</mapper>
