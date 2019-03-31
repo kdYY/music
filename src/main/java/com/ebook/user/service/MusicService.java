@@ -7,10 +7,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -136,42 +133,71 @@ public class MusicService {
             return new PageInfo(songs);
         }
         //获取用户的标签，进行标签匹配
-        String userTagName  = "90后|游戏|放松";
+        String userTagName  = "90后:3|游戏:4|放松:5|轻音乐:1";
         if(userId == -1 || userTagName == null) {
             return new PageInfo(songs);
         }
-        String[] userTag = userTagName.split("|");
+        //分解用户标签{key=90后, value=3}的map集合
+        String[] userTag = userTagName.split("\\|");
+        Map<String, Integer> userTapMap = new HashMap<>();
+        for (String tag : userTag) {
+            String[] split = tag.split(":");
+            if(split.length == 2) {
+                userTapMap.put(split[0], Integer.valueOf(split[1]));
+            }
+        }
+//        Map<String, Integer> sortedMap  = userTapMap.entrySet().stream()
+//                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+//                .collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue(), (x1, x2) -> x2, LinkedHashMap::new));
 
+        //获取歌曲的标签体
         List<String> songIds = songs.stream().map(Song::getSongid).collect(Collectors.toList());
         SongTagExample songTagExample = new SongTagExample();
         songTagExample.createCriteria().andSongidIn(songIds);
         songTagExample.setOrderByClause("hot desc");
         List<SongTag> songTags = songTagMapper.selectByExample(songTagExample);
 
-        //根据用户的标签筛选出包含这些标签的songId
-        List<String> collect = songTags.stream().filter(item -> {
+        //根据用户画像标签获取 歌曲id:期望值 的map集合
+        HashMap<String, Integer> recommendSongIdMap = new HashMap<>();
+        songTags.forEach(item-> {
             String itemTag = item.getTag();
             if (itemTag != null) {
-                for (String tag : userTag) {
-                    if (itemTag.contains(tag)) {
-                        return true;
+                Iterator iter = userTapMap.entrySet().iterator();
+                int recommendValue = 0;
+                while (iter.hasNext()) {
+                    Map.Entry entry = (Map.Entry) iter.next();
+                    String tag = (String) entry.getKey();
+                    Integer tagVal = (Integer) entry.getValue();
+                    if (itemTag.contains(tag) && tagVal != null) {
+                        recommendValue += tagVal;
+                        if(item.getHot() != null) {
+                            recommendValue += 0.5 * item.getHot();
+                        }
                     }
+
                 }
+                recommendSongIdMap.put(item.getSongid(), recommendValue);
             }
-            return false;
-        }).map(SongTag::getSongid).collect(Collectors.toList());
-        if(collect.size() == 0) {
+        });
+        if(songTags.size() == 0) {
             return  new PageInfo(songs);
         }
-        List<Song> remmendSong = songs.stream().filter(song -> !collect.contains(song.getSongid())).collect(Collectors.toList());
-        //songTags.stream().sorted(Comparator.comparing(SongTag::getHot)).collect(Collectors.toList());
+        List<Song> remmendSong = songs.stream().filter(song -> {
+            Integer songRecommendValue = recommendSongIdMap.get(song.getSongid());
+            if(songRecommendValue == null) {
+                return false;
+            }
+            song.setRecommendValue(songRecommendValue);
+            return true;
+        }).sorted(Comparator.comparing(Song::getRecommendValue)).collect(Collectors.toList());
+
         return new PageInfo(remmendSong);
 
     }
 
 
     /**
-     * 获取标签下听取次数最多,hot次多的歌单
+     * 获取标签下听取playCount次数最多,hot次多的歌单
      */
     public PageInfo<Song> getTopPlayCountSongSheetByTagName(String tagName, Integer pageNum, Integer pageSize) {
 
